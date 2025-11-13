@@ -1,0 +1,38 @@
+version: "3.0"
+
+services:
+  netcore:
+    container_name: netcore
+    build:
+      context: ./core
+      dockerfile: core.dockerfile
+    restart: always
+    networks:
+      - app-network
+    expose: 
+      - "8080"
+    ports:
+      - "8080:8080"
+      
+  #Nginx Service
+  webserver:
+    depends_on:
+      - netcore
+    build:
+      context: ./nginx
+      dockerfile: nginx.dockerfile
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  core:
+    driver: local
